@@ -12,5 +12,7 @@ api.post('/login', controladorUsuario.Login);
 
 
 api.put('/editarUsuario/:idUsuario', md_autenticacion.Auth, controladorUsuario.editarUsuario);
+api.delete('/eliminarUsuario/:idUsuario', controladorUsuario.editarUsuario);
+
 
 module.exports = api;

@@ -1,4 +1,4 @@
-const Encuesta = require('../models/asignacion.models');
+const Asignacion = require('../models/asignacion.models');
 
 
 
@@ -33,7 +33,46 @@ function agregarAsignacion(req, res) {
 }
 
 
+function editarasignacion(req, res) {
+    var idAsignacion = req.params.idAsignacion;
+    var parametros = req.body;
+
+    delete parametros.password
+
+    if (req.user.sub !== idAsignacion) {
+        return res.status(500).send({ mensaje: 'No tiene los permisos para editar este .' });
+    }
+
+    Asignacion.findByIdAndUpdate(req.user.sub, parametros, { new: true }, (err, asignacionEditado) => {
+        if (err) return res.status(500).send({ mensaje: 'Error en  la peticion' });
+        if (!asignacionEditado) return res.status(500).send({ mensaje: 'Error al editar el Usuario' });
+
+        return res.status(200).send({ asignacion: asignacionEditado });
+    })
+}
+
+
+
+
+function eliminarAsignacion (req,res){
+    var idAsignacion = req.params.idAsignacion;
+
+    if(req.user.sub !== idAsignacion){
+        return res.status(500).send({mensaje: 'No tiene permiso eliminar usuario'})
+    }else{
+
+        Asignacion.findByIdAndDelete(idUser, (err, asignacionEliminado)=>{
+            if(err) return res.status(500).send({mensaje: 'Error en la peticion'})
+            if(!asignacionEliminado) return res.status(500).send({mensaje: 'Error al eliminar'})
+
+            return res.status(200).send({asignacion: asignacionEliminado})
+        })
+    }
+}
+
 module.exports = {
     agregarAsignacion,
-    obtenerAsignacion
+    obtenerAsignacion,
+    editarasignacion,
+    eliminarAsignacion
 }

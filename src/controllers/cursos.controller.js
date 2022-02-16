@@ -1,4 +1,4 @@
-const Encuesta = require('../models/cursos.models');
+const Curso = require('../models/cursos.models');
 
 function agregarCurso(req, res) {
     var parametros = req.body;
@@ -22,7 +22,7 @@ function agregarCurso(req, res) {
 
 
 function obtenerCurso(req, res) {
-    Cursos.find({}, (err, cursoEncontrados)=>{
+    Curso.find({}, (err, cursoEncontrados)=>{
         if(err) return res.status(500).send({ mensaje: 'Error en la Peticion'});
         if(!cursoEncontrados) return res.status(500).send({ mensaje: 'Error al obtener los cursos'});
 
@@ -31,9 +31,47 @@ function obtenerCurso(req, res) {
 }
 
 
+function editarCurso(req, res) {
+    var idUser = req.params.idCursos;
+    var parametros = req.body;
+
+    delete parametros.password
+
+    if (req.user.sub !== idUser) {
+        return res.status(500).send({ mensaje: 'No tiene los permisos para editar este .' });
+    }
+
+    Curso.findByIdAndUpdate(req.user.sub, parametros, { new: true }, (err, cursoEditado) => {
+        if (err) return res.status(500).send({ mensaje: 'Error en  la peticion' });
+        if (!cursoEditado) return res.status(500).send({ mensaje: 'Error al editar' });
+
+        return res.status(200).send({ curso: cursoEditado });
+    })
+}
+
+
+
+function EliminarCurso (req,res){
+    var idCursos = req.params.idCursos;
+
+    if(req.user.sub !== idCursos){
+        return res.status(500).send({mensaje: 'No tiene permiso eliminar usuario'})
+    }else{
+
+        Curso.findByIdAndDelete(idUser, (err, cursoEliminado)=>{
+            if(err) return res.status(500).send({mensaje: 'Error en la peticion'})
+            if(!cursoEliminado) return res.status(500).send({mensaje: 'Error al eliminar'})
+
+            return res.status(200).send({curso: cursoEliminado})
+        })
+    }
+}
+
 
 
 module.exports = {
     agregarCurso,
-    obtenerCurso
+    obtenerCurso,
+    editarCurso,
+    EliminarCurso
 }

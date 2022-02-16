@@ -119,6 +119,21 @@ function editarUsuario(req, res) {
     })
 }
 
+function eliminarUsuario (req,res){
+    var idUser = req.params.idUsuario;
+
+    if(req.user.sub !== idUser){
+        return res.status(500).send({mensaje: 'No tiene permiso eliminar usuario'})
+    }else{
+
+        Usuario.findByIdAndDelete(idUser, (err, usuarioEliminado)=>{
+            if(err) return res.status(500).send({mensaje: 'Error en la peticion'})
+            if(!usuarioEliminado) return res.status(500).send({mensaje: 'Error al eliminar'})
+
+            return res.status(200).send({usuario: usuarioEliminado})
+        })
+    }
+}
 
 
 // BUSQUEDAS----------------------------
@@ -129,6 +144,7 @@ module.exports = {
     RegistrarMaestro,
     RegistrarAlumno,
     Login,
-    editarUsuario
+    editarUsuario,
+    eliminarUsuario
 
 }
